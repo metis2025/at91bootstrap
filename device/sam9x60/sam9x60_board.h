@@ -86,4 +86,7 @@
 #define CONFIG_SYS_ID_XDMAC	AT91C_ID_XDMAC
 #endif
 
+#define CONFIG_TWI 1
+#define CONFIG_FLEXCOM0 1
+
 #endif /* __DEV_SAM9X60_H__ */
