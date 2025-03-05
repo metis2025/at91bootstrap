@@ -19,7 +19,7 @@
 #define TWI_CLK_OFFSET (4)
 #endif
 
-#define TWI_CLOCK	400000
+#define TWI_CLOCK	1000000
 
 unsigned int twi_init_done;
 
