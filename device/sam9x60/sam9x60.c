@@ -410,6 +410,22 @@ void hw_init(void)
 	at91_leds_init();
 #endif
 
+	// metis gpio pullup for input + output low
+	const struct pio_desc metis_gpio_pins[] = {
+		{"METIS_GPIO0", AT91C_PIN_PA(25), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO1", AT91C_PIN_PD(18), 0, PIO_PULLUP, PIO_INPUT},
+		{"METIS_GPIO1", AT91C_PIN_PD(18), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO2", AT91C_PIN_PD(20), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO3", AT91C_PIN_PD(17), 0, PIO_PULLUP, PIO_INPUT},
+		{"METIS_GPIO3", AT91C_PIN_PD(17), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO4", AT91C_PIN_PD(19), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO5", AT91C_PIN_PB(11), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO6", AT91C_PIN_PA(29), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"METIS_GPIO7", AT91C_PIN_PB(14), 0, PIO_PULLUP, PIO_OUTPUT},
+		{(char *)0, 0, 0, PIO_PULLUP, PIO_INPUT},
+	};
+	pio_configure(metis_gpio_pins);
+
 	/* Configure & Enable PLLA */
 	plla_config.mul = 49;
 	plla_config.div = PLLA_DIV;
