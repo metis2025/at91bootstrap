@@ -10,6 +10,7 @@
 #include "arch/at91_smc.h"
 #include "arch/at91_pio.h"
 #include "arch/at91_ddrsdrc.h"
+#include "arch/at91_spi.h"
 #include "gpio.h"
 #include "pmc.h"
 #include "usart.h"
@@ -46,7 +47,7 @@ static struct at91_flexcom flexcoms[] = {
 	{AT91C_ID_FLEXCOM0, FLEXCOM_TWI, AT91C_BASE_FLEXCOM0},
 	{AT91C_ID_FLEXCOM1, FLEXCOM_TWI, AT91C_BASE_FLEXCOM1},
 	{AT91C_ID_FLEXCOM2, FLEXCOM_TWI, AT91C_BASE_FLEXCOM2},
-	{AT91C_ID_FLEXCOM3, FLEXCOM_TWI, AT91C_BASE_FLEXCOM3},
+	{AT91C_ID_FLEXCOM3, FLEXCOM_SPI, AT91C_BASE_FLEXCOM3},
 	{AT91C_ID_FLEXCOM4, FLEXCOM_TWI, AT91C_BASE_FLEXCOM4},
 	{AT91C_ID_FLEXCOM5, FLEXCOM_TWI, AT91C_BASE_FLEXCOM5},
 	{AT91C_ID_FLEXCOM6, FLEXCOM_TWI, AT91C_BASE_FLEXCOM6},
@@ -398,6 +399,70 @@ static int oled_splash(void) {
     return 0;
 }
 
+static inline unsigned int spi_readl(unsigned int reg)
+{
+	return readl(reg);
+}
+
+static inline void spi_writel(unsigned int reg, unsigned int value)
+{
+	writel(value, reg);
+}
+
+static void spi_write_data(unsigned int base, unsigned short data)
+{
+	while ((spi_readl(base + SPI_SR) & AT91C_SPI_TXEMPTY) == 0);
+	spi_writel(base + SPI_TDR, data);
+	while ((spi_readl(base + SPI_SR) & AT91C_SPI_TDRE) == 0);
+}
+
+static int lcd_splash(void) {
+	const struct pio_desc lcd_gpio_pins[] = {
+		{"LCD_A0", AT91C_PIN_PC(23), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"LCD_RESET", AT91C_PIN_PC(31), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"LCD_BL", AT91C_PIN_PC(25), 0, PIO_PULLUP, PIO_OUTPUT},
+		{(char *)0, 0, 0, PIO_PULLUP, PIO_INPUT},
+	};
+	pio_configure(lcd_gpio_pins);
+	pio_set_value(AT91C_PIN_PC(31), 0); // Reset LOW
+	pio_set_value(AT91C_PIN_PC(31), 1); // Reset HIGH
+	const struct pio_desc flx_pins[3] = { // FLEXCOM3
+		{"FLX_IO0", AT91C_PIN_PC(22), 0, PIO_DEFAULT, PIO_PERIPH_B},
+		{"FLX_IO3", AT91C_PIN_PC(26), 0, PIO_DEFAULT, PIO_PERIPH_B},
+		{(char *)0, 0, 0, PIO_DEFAULT, PIO_PERIPH_A},
+	};
+	pio_configure(flx_pins);
+	flexcom_init(3);
+	pmc_enable_periph_clock(AT91C_ID_FLEXCOM3, PMC_PERIPH_CLK_DIVIDER_NA);
+	unsigned int base = flexcom_get_regmap(3);
+	/* Reset SPI, sometimes the SPI may need twice reset */
+	spi_writel(base + SPI_CR, AT91C_SPI_SWRST);
+	spi_writel(base + SPI_CR, AT91C_SPI_SWRST);
+	spi_writel(base + SPI_MR, AT91C_SPI_MSTR | AT91C_SPI_MODFDIS | AT91C_SPI_PCS((~(1) & 0xf)));
+	spi_writel(base + SPI_CSR(0), AT91C_SPI_SCBR(div(at91_get_ahb_clock(), 1000000)) | AT91C_SPI_NCPHA);
+	spi_writel(base+SPI_CR, AT91C_SPI_SPIEN);
+	pio_set_value(AT91C_PIN_PC(23), 0); // A0 CMD LOW
+	spi_write_data(base, 0xE2); // Software Reset
+	spi_write_data(base, 0xC8); // Common output mode: reverse (C0 for normal)
+	spi_write_data(base, 0x81); // contrast
+	spi_write_data(base, 0x28); //  Power control
+	spi_write_data(base, 0x2F);
+	spi_write_data(base, 0xAF); // Display ON
+	for (int page = 0; page < 8; page++) {
+		for (int j = 0; j < 2; j++)	{
+			pio_set_value(AT91C_PIN_PC(23), 0); // A0 CMD LOW
+			spi_write_data(base, 0xB0 + page);
+			spi_write_data(base, 0x00);
+			spi_write_data(base, 0x10);
+			pio_set_value(AT91C_PIN_PC(23), 1); // A0 DATA HIGH
+			for (int i=0; i < 128; i++ ) spi_write_data(base, logo[page*128+i]);
+		}
+	}
+	pio_set_value(AT91C_PIN_PC(25), 1); // back light on
+	dbg_info("LED Splash Done\n");
+	return 0;
+}
+
 void hw_init(void)
 {
 	unsigned int reg;
@@ -453,6 +518,7 @@ void hw_init(void)
 #ifdef CONFIG_TWI
 	twi_init();
 	oled_splash();
+	lcd_splash();
 #endif
 
 	reg = readl(AT91C_BASE_SFR + SFR_DDRCFG);
