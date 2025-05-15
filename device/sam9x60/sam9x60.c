@@ -416,13 +416,6 @@ static unsigned char bmd1000[] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 };
 
-// Array of all bitmaps for convenience. (Total bytes used to store images in PROGMEM = 1040)
-const int epd_bitmap_allArray_LEN = 1;
-const unsigned char* epd_bitmap_allArray[1] = {
-	epd_bitmap_BMD_1000_1_Dubai_18B__Arial_10_
-};
-
-
 static unsigned char oled_init_cmds[] = {
     0xAE, // Display OFF
     0xD5, 0x80, // Set Display Clock Divide Ratio
