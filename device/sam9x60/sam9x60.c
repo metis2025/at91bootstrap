@@ -487,7 +487,7 @@ static int lcd_splash(void) {
 	const struct pio_desc lcd_gpio_pins[] = {
 		{"LCD_A0", AT91C_PIN_PC(23), 0, PIO_PULLUP, PIO_OUTPUT},
 		{"LCD_RESET", AT91C_PIN_PC(31), 0, PIO_PULLUP, PIO_OUTPUT},
-		{"LCD_BL", AT91C_PIN_PC(25), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"LCD_BL", AT91C_PIN_PC(21), 0, PIO_PULLUP, PIO_OUTPUT},
 		{(char *)0, 0, 0, PIO_PULLUP, PIO_INPUT},
 	};
 	pio_configure(lcd_gpio_pins);
@@ -525,7 +525,7 @@ static int lcd_splash(void) {
 			for (int i=0; i < 128; i++ ) spi_write_data(base, bmd1000[page*128+i]);
 		}
 	}
-	pio_set_value(AT91C_PIN_PC(25), 1); // back light on
+	pio_set_value(AT91C_PIN_PC(21), 1); // back light on
 	dbg_info("LED Splash Done\n");
 	return 0;
 }
