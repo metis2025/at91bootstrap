@@ -492,6 +492,7 @@ static int lcd_splash(void) {
 	};
 	pio_configure(lcd_gpio_pins);
 	pio_set_value(AT91C_PIN_PC(31), 0); // Reset LOW
+	pio_set_value(AT91C_PIN_PC(23), 0); // A0 CMD LOW
 	pio_set_value(AT91C_PIN_PC(31), 1); // Reset HIGH
 	const struct pio_desc flx_pins[3] = { // FLEXCOM3
 		{"FLX_IO0", AT91C_PIN_PC(22), 0, PIO_DEFAULT, PIO_PERIPH_B},
@@ -508,13 +509,30 @@ static int lcd_splash(void) {
 	spi_writel(base + SPI_MR, AT91C_SPI_MSTR | AT91C_SPI_MODFDIS | AT91C_SPI_PCS((~(1) & 0xf)));
 	spi_writel(base + SPI_CSR(0), AT91C_SPI_SCBR(div(at91_get_ahb_clock(), 1000000)) | AT91C_SPI_NCPHA);
 	spi_writel(base+SPI_CR, AT91C_SPI_SPIEN);
-	pio_set_value(AT91C_PIN_PC(23), 0); // A0 CMD LOW
+#if 0
 	spi_write_data(base, 0xE2); // Software Reset
 	spi_write_data(base, 0xC8); // Common output mode: reverse (C0 for normal)
 	spi_write_data(base, 0x81); // contrast
 	spi_write_data(base, 0x28); //  Power control
 	spi_write_data(base, 0x2F);
 	spi_write_data(base, 0xAF); // Display ON
+#else // L12864G-243WFF1
+	spi_write_data(base, 0xE2); // software reset 
+	spi_write_data(base, 0xA3); // A3-1/7 Bias ,A2-1/9 Bias
+	spi_write_data(base, 0xA0); // ADC set (SEG) a1 
+	spi_write_data(base, 0xC8); // COM reves c8
+	spi_write_data(base, 0xA4); // DISPLAY NORMAL
+	spi_write_data(base, 0x40); // DISPLAY START LINE SET
+	spi_write_data(base, 0x24); // V0 Voltage Resistor Ratio Set
+	spi_write_data(base, 0x81); // Electronic Volume Mode Set 
+	spi_write_data(base, 0x50); // Electronic Volume Register Set() 0-63
+	spi_write_data(base, 0xF8); // The Booster set 4x 
+	spi_write_data(base, 0x00); // The Booster set 0x00
+	spi_write_data(base, 0x2B); // The Power Control Set 
+	spi_write_data(base, 0x2E);
+	spi_write_data(base, 0x2F);
+	spi_write_data(base, 0xAF); //Lcd Disply ON 
+#endif
 	for (int page = 0; page < 8; page++) {
 		for (int j = 0; j < 2; j++)	{
 			pio_set_value(AT91C_PIN_PC(23), 0); // A0 CMD LOW
@@ -523,6 +541,7 @@ static int lcd_splash(void) {
 			spi_write_data(base, 0x10);
 			pio_set_value(AT91C_PIN_PC(23), 1); // A0 DATA HIGH
 			for (int i=0; i < 128; i++ ) spi_write_data(base, bmd1000[page*128+i]);
+			for (int i=0; i < 4; i++ ) spi_write_data(0);
 		}
 	}
 	pio_set_value(AT91C_PIN_PC(21), 1); // back light on
