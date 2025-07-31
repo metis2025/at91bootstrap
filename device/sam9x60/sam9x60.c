@@ -541,7 +541,7 @@ static int lcd_splash(void) {
 			spi_write_data(base, 0x10);
 			pio_set_value(AT91C_PIN_PC(23), 1); // A0 DATA HIGH
 			for (int i=0; i < 128; i++ ) spi_write_data(base, bmd1000[page*128+i]);
-			for (int i=0; i < 4; i++ ) spi_write_data(0);
+			for (int i=0; i < 4; i++ ) spi_write_data(base, 0);
 		}
 	}
 	pio_set_value(AT91C_PIN_PC(21), 1); // back light on
