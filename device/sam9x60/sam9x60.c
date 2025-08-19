@@ -575,6 +575,7 @@ void hw_init(void)
 		{"METIS_GPIO7", AT91C_PIN_PB(14), 0, PIO_PULLUP, PIO_OUTPUT},
 		{"MAYAW1_RESET", AT91C_PIN_PB(23), 0, PIO_PULLUP, PIO_OUTPUT},
 		// {"VERSION_ID", AT91C_PIN_PD(16), 0, PIO_PULLUP, PIO_OUTPUT},
+		{"USB20_EN_PC9", AT91C_PIN_PC(9), 1, PIO_PULLUP, PIO_OUTPUT},  // USB20_EN_PC9 : bootstrap OK to Micro Processor 2025.08.19
 		{(char *)0, 0, 0, PIO_PULLUP, PIO_INPUT},
 	};
 	pio_configure(metis_gpio_pins);
