@@ -632,7 +632,7 @@ void hw_init(void)
 	/* Perform the WILC initialization sequence */
 	wilc_pwrseq();
 #endif
-	mdelay(150);
+	mdelay(200);
 	lcd_splash();
 }
 
