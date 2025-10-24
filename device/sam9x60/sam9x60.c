@@ -632,8 +632,8 @@ void hw_init(void)
 	/* Perform the WILC initialization sequence */
 	wilc_pwrseq();
 #endif
-	mdelay(1);
-	lcd_splash();
+	// mdelay(1);
+	// lcd_splash();
 }
 
 #ifdef CONFIG_DATAFLASH
