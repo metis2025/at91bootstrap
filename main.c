@@ -152,7 +152,8 @@ int main(void)
 
 	/* point never reached with TZ support */
 #endif
-
+	void lcd_splash(void);
+	lcd_splash();
 #ifdef CONFIG_JUMP_TO_SW
 	return JUMP_ADDR;
 #else
