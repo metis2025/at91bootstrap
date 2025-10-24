@@ -483,7 +483,7 @@ static void spi_write_data(unsigned int base, unsigned short data)
 	while ((spi_readl(base + SPI_SR) & AT91C_SPI_TDRE) == 0);
 }
 
-static int lcd_splash(void) {
+void lcd_splash(void) {
 	const struct pio_desc lcd_gpio_pins[] = {
 		{"LCD_A0", AT91C_PIN_PC(23), 0, PIO_PULLUP, PIO_OUTPUT},
 		{"LCD_RESET", AT91C_PIN_PC(31), 0, PIO_PULLUP, PIO_OUTPUT},
@@ -546,7 +546,7 @@ static int lcd_splash(void) {
 	}
 	pio_set_value(AT91C_PIN_PC(21), 1); // back light on
 	dbg_info("LED Splash Done\n");
-	return 0;
+	// return 0;
 }
 
 void hw_init(void)
