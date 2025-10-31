@@ -588,7 +588,7 @@ void hw_init(void)
 		{"AT3_PWR", AT91C_PIN_PB(10), 0, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.31
 		{"AT3_USB", AT91C_PIN_PD(14), 0, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.31
 		// USB Enable
-		{"USB_ENABLE", AT91C_PIN_PC(19), 1, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.31
+		{"USB_ENABLE", AT91C_PIN_PD(19), 1, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.31
 		{(char *)0, 0, 0, PIO_PULLUP, PIO_INPUT},
 	};
 	pio_configure(metis_gpio_pins);
