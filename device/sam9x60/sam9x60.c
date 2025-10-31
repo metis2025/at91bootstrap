@@ -584,6 +584,10 @@ void hw_init(void)
 		{"BMD1000_LED3_BLU", AT91C_PIN_PB(2), 0, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.27
 		{"RTK_STAT", AT91C_PIN_PD(16), 0, PIO_PULLUP, PIO_INPUT}, // BID-2000 RTK status (Active Low Input) 2025.09.15
 		{"LTE_SHUTDOWN_O", AT91C_PIN_PA(26), 0, PIO_PULLUP, PIO_OUTPUT}, // 2025.09.23 LTE Reset Output (Active High) = Reset
+		// ATSC 3.0
+		{"AT3_PWR", AT91C_PIN_PB(10), 0, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.31
+		{"AT3_USB", AT91C_PIN_PD(14), 0, PIO_PULLUP, PIO_OUTPUT}, // 2025.10.31
+	
 		{(char *)0, 0, 0, PIO_PULLUP, PIO_INPUT},
 	};
 	pio_configure(metis_gpio_pins);
