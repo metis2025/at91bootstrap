@@ -544,7 +544,7 @@ void lcd_splash(void) {
 			for (int i=0; i < 4; i++ ) spi_write_data(base, 0);
 		}
 	}
-	pio_set_value(AT91C_PIN_PC(21), 1); // back light on
+	pio_set_value(AT91C_PIN_PC(21), 0); // back light off 2025.11.28
 	dbg_info("LED Splash Done\n");
 	// return 0;
 }
